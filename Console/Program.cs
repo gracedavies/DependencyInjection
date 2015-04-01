@@ -47,11 +47,10 @@ namespace AppConsole
             container.Configure(r => r.For<INode>().Use<A2>().Named("A2").Ctor<INode>("A3").Is(i => i.GetInstance<INode>("A3")).Ctor<INode>("B1").Is(i => i.GetInstance<INode>("B1")));
             container.Configure(r => r.For<INode>().Use<A1>().Named("A1").Ctor<INode>("A2").Is(i => i.GetInstance<INode>("A2")).Ctor<INode>("C1").Is(i => i.GetInstance<INode>("C1")));   
 
-
             //Why does this not work?!?! ;'(
-            var root2 = container.GetInstance<INode>("A1");
+            var root = container.GetInstance<INode>("A1");
 
-            root2.Go(string.Empty).ToList().ForEach(x => Console.WriteLine(x.GetType().Name));
+            root.Go(string.Empty).ToList().ForEach(x => Console.WriteLine(x.GetType().Name));
 
             Console.ReadKey();
         }
