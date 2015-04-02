@@ -26,31 +26,36 @@ namespace AppConsole
             //    .ForEach(x => Console.WriteLine(x.GetType().Name));
 
             //var container = new WindsorContainer();
-            //container.Register(Component.For<INode>().ImplementedBy<B3>().Named("B3"));
-            //container.Register(Component.For<INode>().ImplementedBy<B2>().Named("B2"));
-            //container.Register(Component.For<INode>().ImplementedBy<A3>().Named("A3"));
-            //container.Register(Component.For<INode>().ImplementedBy<C1>().Named("C1").DependsOn(container.Resolve<INode>("B3")));
-            //container.Register(Component.For<INode>().ImplementedBy<B1>().Named("B1").DependsOn(new { B2 = container.Resolve<INode>("B2") }));
-            //container.Register(Component.For<INode>().ImplementedBy<A2>().Named("A2").DependsOn(new { A3 = container.Resolve<INode>("A3"), B1 = container.Resolve<INode>("B1") }));
-            //container.Register(Component.For<INode>().ImplementedBy<A1>().Named("A1").DependsOn(new { A2 = container.Resolve<INode>("A2"), C1 = container.Resolve<INode>("C1") })); 
-
+            //container.Install(new NodeInstaller());
             //var root = container.Resolve<INode>("A1");
-
             //root.Go(string.Empty).ToList().ForEach(x => Console.WriteLine(x.GetType().Name));
 
             var container = new Container();
-            container.Configure(r => r.For<INode>().Use<B3>().Named("B3"));
-            container.Configure(r => r.For<INode>().Use<B2>().Named("B2"));
-            container.Configure(r => r.For<INode>().Use<A3>().Named("A3"));
-            container.Configure(r => r.For<INode>().Use<C1>().Named("C1").Ctor<INode>("B3").Is(i => i.GetInstance<INode>("B3")));
-            container.Configure(r => r.For<INode>().Use<B1>().Named("B1").Ctor<INode>("B2").Is(i => i.GetInstance<INode>("B2")));
-            container.Configure(r => r.For<INode>().Use<A2>().Named("A2").Ctor<INode>("A3").Is(i => i.GetInstance<INode>("A3")).Ctor<INode>("B1").Is(i => i.GetInstance<INode>("B1")));
-            container.Configure(r => r.For<INode>().Use<A1>().Named("A1").Ctor<INode>("A2").Is(i => i.GetInstance<INode>("A2")).Ctor<INode>("C1").Is(i => i.GetInstance<INode>("C1")));   
 
+            //container.Configure(r => r.For<INode>().Use<B3>().Named("B3"));
+            //container.Configure(r => r.For<INode>().Use<B2>().Named("B2"));
+            //container.Configure(r => r.For<INode>().Use<A3>().Named("A3"));
+            //container.Configure(r => r.For<INode>().Use<C1>().Named("C1").Ctor<INode>("B3").Is(i => i.GetInstance<INode>("B3")));
+            //container.Configure(r => r.For<INode>().Use<B1>().Named("B1").Ctor<INode>("B2").Is(i => i.GetInstance<INode>("B2")));
+            //container.Configure(r => r.For<INode>().Use<A2>().Named("A2").Ctor<INode>("A3").Is(i => i.GetInstance<INode>("A3")).Ctor<INode>("B1").Is(i => i.GetInstance<INode>("B1")));
+            //container.Configure(r => r.For<INode>().Use<A1>().Named("A1").Ctor<INode>("A2").Is(i => i.GetInstance<INode>("A2")).Ctor<INode>("C1").Is(i => i.GetInstance<INode>("C1")));
+
+            container.Configure(congig =>
+            {
+                var B3 = congig.For<INode>().Use<B3>();
+                var B2 = congig.For<INode>().Use<B2>();
+                var A3 = congig.For<INode>().Use<B2>();
+                var C1 = congig.For<INode>().Use<C1>().Ctor<INode>().Is(B3);
+                var B1 = congig.For<INode>().Use<B1>().Ctor<INode>().Is(B2);
+                var A2 = congig.For<INode>().Use<A2>().Named("A2").Ctor<INode>().Is(A3).Ctor<INode>().Is(B1);
+                congig.For<INode>().Use<A1>().Named("A1").Ctor<INode>().Is(A2).Ctor<INode>().Is(C1);
+            });
+            
             //Why does this not work?!?! ;'(
-            var root = container.GetInstance<INode>("A1");
+           
+            var test = container.GetInstance<INode>("A2");
 
-            root.Go(string.Empty).ToList().ForEach(x => Console.WriteLine(x.GetType().Name));
+            test.Go(string.Empty).ToList().ForEach(x => Console.WriteLine(x.GetType().Name));
 
             Console.ReadKey();
         }
